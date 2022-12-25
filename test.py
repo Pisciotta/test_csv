@@ -52,8 +52,9 @@ if __name__ == "__main__":
   scores, space, trues = [], [], []
   for key in params:
     space.append(hp.quniform(key, params[key][0], params[key][1], params[key][2]))
-  for i, fName in enumerate(["RLX"]):
+  for i, fName in enumerate(["RLX","GTHX","ASTL","NILE","BABA","FINV","WEI"]):
     df = pd.read_csv(filepath_or_buffer="https://raw.githubusercontent.com/Pisciotta/test_csv/main/"+fName+".csv")
+    df = df.iloc[::-1]
     fn = lambda x: loss(df, function(df,x))
     min_params = fmin(fn=fn, space=space, algo=tpe.suggest, max_evals=500)
     predictions = function(df,min_params.values())
