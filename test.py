@@ -8,8 +8,8 @@ from hyperopt import fmin, hp, tpe, STATUS_OK
 Set your function's parameters
 '''
 params = {}
-params["N"] = [0,10,1] # Parameter "N" in the range 0 to 10 (min step = 1)
-params["margin"] = [0,10,0.1] # Parameter "margin" in the range 0 to 10 (min step 0.1)
+params["N"] = [0,15,1] # Parameter "N" in the range 0 to 10 (min step = 1)
+params["margin"] = [0,5,1] # Parameter "margin" in the range 0 to 10 (min step 0.1)
 '''
 Set your class. E.g. True if next 5 candles close price drops below 10%,
 otherwise False.
