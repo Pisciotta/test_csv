@@ -14,7 +14,7 @@ Set your class. E.g. True if next 5 candles close price drops below 10%,
 otherwise False.
 '''
 gain = -0.1
-next_candles = 5
+next_candles = 7
 
 def function(df, p):
         '''
@@ -40,13 +40,17 @@ NOT CHANGE AFTER THIS LINE
 """
 def loss(df, predictions):
   df["thresh"] = df.close*(1+gain)
-  df["real"] = df.close.rolling(next_candles).min().shift(-next_candles)
-  df["class"] = df["real"] < df["thresh"] if gain < 0 else df["real"] > df["thresh"]
+  if gain < 0:
+    df["real"] = df.close.rolling(next_candles).min().shift(-next_candles)
+    df["class"] = df["real"] < df["thresh"]
+  else:
+    df["real"] = df.close.rolling(next_candles).max().shift(-next_candles)
+    df["class"] = df["real"] > df["thresh"]
   score = int(precision_score(df["class"], predictions)*100) if sum(predictions) > 0 else 0
   if score < 100:
     return -score
   else:
-    return -score*sum(predictions)
+    return -score-sum(predictions)
 
 if __name__ == "__main__":
   scores, space, trues = [], [], []
