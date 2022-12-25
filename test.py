@@ -1,8 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.metrics import precision_score
-import hyperopt
-from hyperopt import fmin, hp, tpe, STATUS_OK
+from hyperopt import fmin, hp, tpe
 
 '''
 Set your function's parameters
