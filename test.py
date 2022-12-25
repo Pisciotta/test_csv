@@ -44,16 +44,22 @@ def loss(df, predictions):
   df["real"] = df.close.rolling(next_candles).min().shift(-next_candles)
   df["class"] = df["real"] < df["thresh"] if gain < 0 else df["real"] > df["thresh"]
   score = int(precision_score(df["class"], predictions)*100) if sum(predictions) > 0 else 0
-  return -score
+  if score < 100:
+    return -score
+  else:
+    return -score*sum(predictions)
 
 if __name__ == "__main__":
-  scores, space = [], []
+  scores, space, trues = [], [], []
   for key in params:
     space.append(hp.quniform(key, params[key][0], params[key][1], params[key][2]))
-  for i, fName in enumerate(["BBIG", "PIXY", "RELI", "SXTC", "WEI"]):
+  for i, fName in enumerate(["RLX"]):
     df = pd.read_csv(filepath_or_buffer="https://raw.githubusercontent.com/Pisciotta/test_csv/main/"+fName+".csv")
     fn = lambda x: loss(df, function(df,x))
     min_params = fmin(fn=fn, space=space, algo=tpe.suggest, max_evals=500)
-    scores.append(fn(min_params.values()))
+    predictions = function(df,min_params.values())
+    scores.append(loss(df, predictions))
+    trues.append(sum(predictions))
   print("Scores", scores)
-  print(["PASS" if score < -90 else "FAIL" for score in scores])
+  print("Nr. of TRUE", trues)
+  print("OK" if sum([1 if score < -90 else 0 for score in scores]) == len(scores) else "FAIL")
