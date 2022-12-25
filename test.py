@@ -39,7 +39,7 @@ def function(df, p):
 """
 NOT CHANGE AFTER THIS LINE
 """
-def loss(predictions):
+def loss(df, predictions):
   df["thresh"] = df.close*(1+gain)
   df["real"] = df.close.rolling(next_candles).min().shift(-next_candles)
   df["class"] = df["real"] < df["thresh"] if gain < 0 else df["real"] > df["thresh"]
@@ -52,6 +52,8 @@ if __name__ == "__main__":
     space.append(hp.quniform(key, params[key][0], params[key][1], params[key][2]))
   for i, fName in enumerate(["BBIG", "PIXY", "RELI", "SXTC", "WEI"]):
     df = pd.read_csv(filepath_or_buffer="https://raw.githubusercontent.com/Pisciotta/test_csv/main/"+fName+".csv")
-    fn = lambda x: loss(function(df,x))
+    fn = lambda x: loss(df, function(df,x))
     min_params = fmin(fn=fn, space=space, algo=tpe.suggest, max_evals=500)
-    scores.append(min_params)
+    scores.append(fn(min_params.values()))
+  print("Scores", scores)
+  print(["PASS" if score < -90 else "FAIL" for score in scores])
